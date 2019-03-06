@@ -4,7 +4,6 @@ class GameInfo::CLI
 			puts 'Top Games streaming on Twitch.tv:'
 			self.list_games
 			puts "Select a game by its [number], or input 'exit' "
-			binding.pry
 			@input = gets.chomp.downcase
 			if (1..@@games.length).include?(@input.to_i)
 					@input = @input.to_i - 1
