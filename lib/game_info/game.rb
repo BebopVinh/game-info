@@ -1,7 +1,10 @@
 class GameInfo::Game
-    attr_accessor :name, :viewers, :platform, :genre
+    attr_accessor :name, :viewers, :platform_release, :genres
     @@all = []
-    test_case = {name: 'Test', viewers: '150K', platform: 'PS4, XOne, Switch, PC', genre: 'fighting'}
+
+    # @@void = ['Just Chatting', 'Music & Performing Arts', 'ASMR', 'Talk Shows & Podcasts', 
+    # 'Science & Technology', 'Food & Drink', 'Makers & Crafting', 'Travel & Outdoors', 
+    # 'Sports & Fitness', 'Beauty & Body Art', 'Special Events']
 
     def initialize(game_hash)
         game_hash.each {|key, value| self.send(("#{key}="), value)}
@@ -12,5 +15,11 @@ class GameInfo::Game
         @@all
     end
     
-    game = self.new(test_case)
+    def self.find_game(name)
+      @@all.find{|game| game.name == name}
+    end
+
+    def self.find_or_create(name)
+      find_game(name) || new(name)
+    end
 end

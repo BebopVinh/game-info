@@ -23,10 +23,9 @@ class GameInfo::CLI
     end
 
 		def inspect(input)
-			game = GameInfo::Scraper.games[input][:name]
-			
-			puts "The game you've selected is #{game}:"
-			GameInfo::Scraper.find_info(game)
+			chosen_game = GameInfo::Scraper.games[input][:name]
+			puts "The game you've selected is #{chosen_game}:"
+			GameInfo::Scraper.find_info(chosen_game)
     end
 
 end
