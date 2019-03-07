@@ -2,6 +2,4 @@
 
 require_relative '../lib/game_info'
 
-puts 'run file is working'
-
 GameInfo::CLI.new.call

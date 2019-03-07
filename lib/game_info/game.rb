@@ -5,12 +5,7 @@ class GameInfo::Game
 
     def initialize(game_hash)
         game_hash.each {|key, value| self.send(("#{key}="), value)}
-        # game_hash.each{|key, value| puts '#{key}, #{value}'}
         @@all << self
-    end
-
-    def self.create(game_hash)
-        game_hash.each{|key,value| puts "#{key}, #{value}"}
     end
 
     def self.all
