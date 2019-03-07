@@ -1,11 +1,10 @@
 class GameInfo::CLI
-		@@games = ['Fortnite', 'LOL', 'Apex Legends', 'WOW', 'DOTA2']
     def call
 			puts 'Top Games streaming on Twitch.tv:'
 			self.list_games
 			puts "Select a game by its [number], or input 'exit' "
 			@input = gets.chomp.downcase
-			if (1..@@games.length).include?(@input.to_i)
+			if (1..GameInfo::Scraper.games.length).include?(@input.to_i)
 					@input = @input.to_i - 1
 					self.inspect(@input)
 			elsif @input == 'exit'
@@ -15,19 +14,19 @@ class GameInfo::CLI
 			end
     end
 
-    def list_games
-			puts <<-DOC.gsub(/^\s+/, "")
-					1. Fortnite
-					2. League of Legends
-					3. Apex Legends
-					4. World of Warcraft
-					5. Dota 2
-			DOC
+		def list_games
+			i = 1
+			GameInfo::Scraper.games.each do |game|
+				puts "[#{i}]  #{game[:name]} - @#{game[:viewers]} average viewers"
+				i += 1
+			end
     end
 
 		def inspect(input)
-			game = @@games[input]
-			puts "The game you've selected is #{game}."
+			game = GameInfo::Scraper.games[input][:name]
+			
+			puts "The game you've selected is #{game}:"
+			GameInfo::Scraper.find_info(game)
     end
 
 end
