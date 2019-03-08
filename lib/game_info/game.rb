@@ -1,5 +1,6 @@
 class GameInfo::Game
-    attr_accessor :name, :viewers, :platform_release, :genres
+    attr_accessor :name, :viewers, :platform_release, :genres,
+                  :developers, :publishers, :modes, :esrb, :reviews
     @@all = []
 
     # @@void = ['Just Chatting', 'Music & Performing Arts', 'ASMR', 'Talk Shows & Podcasts', 
@@ -11,6 +12,10 @@ class GameInfo::Game
         @@all << self
     end
 
+    def add_info(game_hash)
+      game_hash.each {|key, value| self.send(("#{key}="), value)}
+    end
+
     def self.all
         @@all
     end
@@ -19,7 +24,4 @@ class GameInfo::Game
       @@all.find{|game| game.name == name}
     end
 
-    def self.find_or_create(name)
-      find_game(name) || new(name)
-    end
 end
