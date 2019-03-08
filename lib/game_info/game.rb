@@ -1,6 +1,6 @@
 class GameInfo::Game
-    attr_accessor :developers, :publishers, :modes, :esrb, :reviews
-                  :name, :viewers, :platform_release, :genres,
+    attr_accessor :developers, :publishers, :modes, :esrb, :reviews,
+                  :name, :viewers, :platform_release, :genres
     @@all = []
 
     @@void = ['Just Chatting', 'Music & Performing Arts', 'ASMR', 'Talk Shows & Podcasts', 

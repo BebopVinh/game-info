@@ -27,27 +27,31 @@ class GameInfo::Scraper
       end
 
       if x = doc.css("div.optimisly-game-maininfo")
-        hash[:developers] = []
+        y = hash[:developers] = []
         x.xpath("//div[@itemprop='author']").each do |tag|
-          hash[:developers] << tag.css('a').text
+          y << tag.css('a').text
         end
 
-        hash[:publishers] = []
+        y = hash[:publishers] = []
         x.path("//div[@itemprop='publisher']").each do |tag|
-          hash[:publishers] << tag.css('a').text
+          binding.pry
+          y =  << tag.css('a').text
         end
       end
 
       if x=doc.css('div.optimisly-game-extrainfo1')
-        hash[:mode]
-        x.css('label.mar-lg-top').each do |tag|
-          tag.css('a').text
+        if node = x.css('label.mar-lg-top').text.downcase.include?('modes')
+          y = hash[:modes] = []
+          node.each do |tag|
+            y << tag.css('a').text
+          end
+        elsif node = x.css('label.mr-lg-top').text.downcase.include?('genre')
+          y = hash[:genres] = []
+          node.each do |tag|
+            y << tag.css('a').text
+          end
         end
-
-
-
       end
-
       game = GameInfo::Game.find_game(chosen_game)
       game.add_info(hash)
       binding.pry
