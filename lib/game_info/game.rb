@@ -3,21 +3,25 @@ class GameInfo::Game
                   :developers, :publishers, :modes, :esrb, :reviews
     @@all = []
 
-    # @@void = ['Just Chatting', 'Music & Performing Arts', 'ASMR', 'Talk Shows & Podcasts', 
-    # 'Science & Technology', 'Food & Drink', 'Makers & Crafting', 'Travel & Outdoors', 
-    # 'Sports & Fitness', 'Beauty & Body Art', 'Special Events']
+    @@void = ['Just Chatting', 'Music & Performing Arts', 'ASMR', 'Talk Shows & Podcasts', 
+    'Science & Technology', 'Food & Drink', 'Makers & Crafting', 'Travel & Outdoors', 
+    'Sports & Fitness', 'Beauty & Body Art', 'Special Events']
 
     def initialize(game_hash)
-        game_hash.each {|key, value| self.send(("#{key}="), value)}
-        @@all << self
+      game_hash.each {|key, value| self.send(("#{key}="), value)}
+      @@all << self
     end
 
-    def add_info(game_hash)
+    def add_info
       game_hash.each {|key, value| self.send(("#{key}="), value)}
     end
 
     def self.all
-        @@all
+      @@all
+    end
+
+    def self.void
+      @@void
     end
     
     def self.find_game(name)

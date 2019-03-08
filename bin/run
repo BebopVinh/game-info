@@ -2,4 +2,5 @@
 
 require_relative '../lib/game_info'
 
+GameInfo::Scraper.new
 GameInfo::CLI.new.call

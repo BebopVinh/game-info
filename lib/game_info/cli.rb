@@ -1,10 +1,9 @@
 class GameInfo::CLI
-    attr_reader :scraper, :input
+    attr_reader :input
     def call
-      @scraper = GameInfo::Scraper.new
-			puts 'Top Games streaming on Twitch.tv:'
-      self.list_games
-      print  "\n\nLast updated: " + @scraper.time
+      puts 'Top Games streaming on Twitch.tv:'
+      list_games
+      print  "\n\nLast updated: " + GameInfo::Scraper.time
 			print "\n\nPlease select a game by its [number], or input 'exit': "
       @input = gets.strip.downcase
       until @input == 'exit'
@@ -17,7 +16,7 @@ class GameInfo::CLI
           @input = gets.strip.downcase
         end
       end
-      puts "Thank you for using Game-Info CLI!"
+      quit_it
     end
 
 		def list_games
@@ -29,9 +28,32 @@ class GameInfo::CLI
     end
 
 		def inspect(input)
-			chosen_game = GameInfo::Scraper.games[input][:name]
-			puts "The game you've selected is #{chosen_game}:"
-			GameInfo::Scraper.find_info(chosen_game)
+      chosen_game = GameInfo::Scraper.games[input][:name]
+      puts "(Loading...) --> || #{chosen_game} ||"
+      if GameInfo::Game.void.include?(chosen_game)
+        puts "\nThis is a variety category stream on Twitch. It does not pertain to video games."
+        continue
+      else
+        GameInfo::Scraper.find_info(chosen_game)
+      end
     end
 
+    def continue
+      input = nil
+      puts "\nEnter [y] to return to menu, [n] to exit"
+      input = gets.strip.downcase
+      if input == 'y'
+        call
+      elsif input == 'n'
+        quit_it
+      else
+        puts "Invalid input."
+        continue
+      end
+    end
+
+    def quit_it
+      puts "Thank you for using Game-Info CLI!"
+      exit!
+    end
 end
