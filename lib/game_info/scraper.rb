@@ -16,42 +16,23 @@ class GameInfo::Scraper
       @@games.each {|hash| GameInfo::Game.new(hash)}
     end
 
-    # def self.find_info(chosen_game)
-    #   name = chosen_game.downcase.delete(?').gsub(' ', '-')
-    #   doc = Nokogiri::HTML(open('https://www.igdb.com/games/' + name)) #old database link
-    #   hash = {}
-    #   doc.css('div.text-muted.release-date').each do |tag|
-    #     platform = tag.css('a').text
-    #     release = tag.css('span time').text
-    #     hash[:platform_release] = [] << "#{platform} - #{release}"
-    #   end
-    #   hash[:developers] = doc.at("//div[@itemprop = 'author']").children.text
-    #   hash[:publishers] = doc.at("//span[@itemprop = 'publisher'] //span[@itemprop = 'name']").text
-    #   game = GameInfo::Game.find_game(chosen_game)
-    #   game.add_info(hash)
-    #   binding.pry
-    # end
-
     def self.find_info(chosen_game)
-      hash = {}
       name = chosen_game.downcase.delete(?').gsub(' ', '-')
-      igdb = Nokogiri::HTML(open('https://www.igdb.com/games/' + name))
-      links = igdb.css('a.gamepage-website-link.col-md-4')
-      wiki = links.find{|link| link['href'].include?('wikipedia')}
-      doc = Nokogiri::HTML(open(wiki['href']))
-      table = doc.css('table.infobox.hproduct tbody tr').children
-      table.each do |cat|
-        x = cat.css('th a').text
-        case x
-        when 'Developer(s)'
-          binding.pry
-        end
+      doc = Nokogiri::HTML(open('https://www.igdb.com/games/' + name)) #old database link
+      hash = {}
+      doc.css('div.text-muted.release-date').each do |tag|
+        platform = tag.css('a').text
+        release = tag.css('span time').text
+        hash[:platform_release] = [] << "#{platform} - #{release}"
       end
-      
 
-      #Add additional to instance of Game with the same name
+      doc.css('div.optimisly-game-maininfo span').each do |tag|
+        binding.pry
+      end
+
       game = GameInfo::Game.find_game(chosen_game)
       game.add_info(hash)
+      binding.pry
     end
 
     def self.games
