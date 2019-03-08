@@ -18,7 +18,7 @@ class GameInfo::Scraper
     end
 
     def self.find_info(chosen_game)
-      name = chosen_game.downcase.gsub(' ', '-')
+      name = chosen_game.downcase.delete(?').gsub(' ', '-')
       info = Nokogiri::HTML(open('https://www.igdb.com/games/' + name))
       hash = {}
       info.css('div.text-muted.release-date').each do |tag|
@@ -26,6 +26,8 @@ class GameInfo::Scraper
         release = tag.css('span time').text
         hash[:platform_release] = [] << "#{platform} - #{release}"
       end
+      hash[:developers] = info.at("//div[@itemprop = 'author']").children.text
+      hash[:publishers] = info.at("//span[@itemprop = 'publisher']").children.text
       game = GameInfo::Game.find_game(chosen_game)
       game.add_info(hash)
       binding.pry
