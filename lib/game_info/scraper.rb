@@ -26,8 +26,26 @@ class GameInfo::Scraper
         hash[:platform_release] = [] << "#{platform} - #{release}"
       end
 
-      doc.css('div.optimisly-game-maininfo span').each do |tag|
-        binding.pry
+      if x = doc.css("div.optimisly-game-maininfo")
+        hash[:developers] = []
+        x.xpath("//div[@itemprop='author']").each do |tag|
+          hash[:developers] << tag.css('a').text
+        end
+
+        hash[:publishers] = []
+        x.path("//div[@itemprop='publisher']").each do |tag|
+          hash[:publishers] << tag.css('a').text
+        end
+      end
+
+      if x=doc.css('div.optimisly-game-extrainfo1')
+        hash[:mode]
+        x.css('label.mar-lg-top').each do |tag|
+          tag.css('a').text
+        end
+
+
+
       end
 
       game = GameInfo::Game.find_game(chosen_game)

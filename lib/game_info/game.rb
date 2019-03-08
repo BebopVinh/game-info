@@ -1,6 +1,6 @@
 class GameInfo::Game
-    attr_accessor :name, :viewers, :platform_release, :genres,
-                  :developers, :publishers, :modes, :esrb, :reviews
+    attr_accessor :developers, :publishers, :modes, :esrb, :reviews
+                  :name, :viewers, :platform_release, :genres,
     @@all = []
 
     @@void = ['Just Chatting', 'Music & Performing Arts', 'ASMR', 'Talk Shows & Podcasts', 
@@ -12,7 +12,7 @@ class GameInfo::Game
       @@all << self
     end
 
-    def add_info
+    def add_info(game_hash)
       game_hash.each {|key, value| self.send(("#{key}="), value)}
     end
 
