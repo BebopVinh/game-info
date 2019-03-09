@@ -1,7 +1,7 @@
 class GameInfo::CLI
     attr_reader :input
     def call
-      puts 'Top Games streaming on Twitch.tv:'
+      puts "Top 10 Games streaming on Twitch.tv:\n\n"
       list_games
       print  "\n\nLast updated: " + GameInfo::Scraper.time
 			print "\n\nPlease select a game by its [number], or input 'exit': "
@@ -40,18 +40,17 @@ class GameInfo::CLI
     end
 
     def print_info(game)
-      binding.pry
       puts <<-DOC
-        ---------------
+        ------------------------------
 
         Developers: #{game.developers.join(', ')}
         Publishers: #{game.publishers.join(', ')}
         Genres: #{game.genres.join(', ')}
         Game Modes: #{game.modes.join(', ')}
-        Platforms-Release Date: #{game.platform_release.join(', ')}
-
-        --------------
+        Platforms & Release Dates:
       DOC
+        game.platform_release.each {|x| puts "            #{x}"}
+        puts "\n\n        ------------------------------"
       continue
     end
 
@@ -70,7 +69,7 @@ class GameInfo::CLI
     end
 
     def quit_it
-      puts "Thank you for using Game-Info CLI!"
+      puts "\nThank you for using Game-Info CLI!"
       exit!
     end
 end

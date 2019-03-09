@@ -20,10 +20,11 @@ class GameInfo::Scraper
       name = chosen_game.downcase.delete(?').gsub(' ', '-')
       doc = Nokogiri::HTML(open('https://www.igdb.com/games/' + name)) #old database link
       hash = {}
+      y = hash[:platform_release] = [] 
       doc.css('div.text-muted.release-date').each do |tag|
         platform = tag.css('a').text
         release = tag.css('span time').text
-        hash[:platform_release] = [] << "#{platform} - #{release}"
+        y << "#{platform} - #{release}"
       end
 
       if x = doc.css("div.optimisly-game-maininfo")
