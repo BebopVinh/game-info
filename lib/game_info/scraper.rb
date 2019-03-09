@@ -33,28 +33,32 @@ class GameInfo::Scraper
         end
 
         y = hash[:publishers] = []
-        x.path("//div[@itemprop='publisher']").each do |tag|
-          binding.pry
-          y =  << tag.css('a').text
+        x.xpath("//span[@itemprop='publisher']").each do |tag|
+          y << tag.css('a').text
         end
       end
 
       if x=doc.css('div.optimisly-game-extrainfo1')
-        if node = x.css('label.mar-lg-top').text.downcase.include?('modes')
-          y = hash[:modes] = []
-          node.each do |tag|
-            y << tag.css('a').text
-          end
-        elsif node = x.css('label.mr-lg-top').text.downcase.include?('genre')
-          y = hash[:genres] = []
-          node.each do |tag|
-            y << tag.css('a').text
-          end
+        node = x.css('label.mar-lg-top')
+        y = hash[:modes] = []
+        z = hash[:genres] = []
+        node.xpath("//a[@itemprop='playMode']").each do |tag|
+          y << tag.text
+        end
+
+        node.xpath("//a[@itemprop='genre']").each do |tag|
+          z << tag.text
         end
       end
+
+      # if x=doc.css('h3.underscratch.underscratch-yellow')
+      #   rating = Nokogiri::HTML(open('https://www.igdb.com/games/' + name + '/age_rating'))
+      #   # rating = rating.css('img.gamepage-rating-image.img-responsive')['title']
+      #   binding.pry
+      # end
       game = GameInfo::Game.find_game(chosen_game)
       game.add_info(hash)
-      binding.pry
+      game
     end
 
     def self.games

@@ -9,7 +9,8 @@ class GameInfo::CLI
       until @input == 'exit'
         if (1..GameInfo::Scraper.games.length).include?(@input.to_i)
           @input = @input.to_i - 1
-          self.inspect(@input)
+          game = self.inspect(@input)
+          self.print_info(game)
         else
           puts "Invalid input, please try again."
           puts "Please select a game by its [number], or input 'exit': "
@@ -34,8 +35,24 @@ class GameInfo::CLI
         puts "\nThis is a variety category stream on Twitch. It does not pertain to video games."
         continue
       else
-        GameInfo::Scraper.find_info(chosen_game)
+        game = GameInfo::Scraper.find_info(chosen_game)
       end
+    end
+
+    def print_info(game)
+      binding.pry
+      puts <<-DOC
+        ---------------
+
+        Developers: #{game.developers.join(', ')}
+        Publishers: #{game.publishers.join(', ')}
+        Genres: #{game.genres.join(', ')}
+        Game Modes: #{game.modes.join(', ')}
+        Platforms-Release Date: #{game.platform_release.join(', ')}
+
+        --------------
+      DOC
+      continue
     end
 
     def continue
