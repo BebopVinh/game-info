@@ -5,7 +5,7 @@ class GameInfo::Game
 
     @@void = ['Just Chatting', 'Music & Performing Arts', 'ASMR', 'Talk Shows & Podcasts', 
     'Science & Technology', 'Food & Drink', 'Makers & Crafting', 'Travel & Outdoors', 
-    'Sports & Fitness', 'Beauty & Body Art', 'Special Events']
+    'Sports & Fitness', 'Beauty & Body Art', 'Special Events', 'Wrestling', 'Always On']
 
     def initialize(game_hash)
       game_hash.each {|key, value| self.send(("#{key}="), value)}
