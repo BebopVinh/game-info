@@ -23,7 +23,7 @@ class GameInfo::CLI
 		def list_games
 			i = 1
       GameInfo::Scraper.games.each do |game|
-				puts "[#{i}]  #{game[:name]} - @#{game[:viewers]} average viewers"
+				puts "[#{i}]  #{game[:name]} || #{game[:viewers]} average viewers"
 				i += 1
       end
     end
