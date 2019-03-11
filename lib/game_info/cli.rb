@@ -82,6 +82,7 @@ class GameInfo::CLI
       puts "Please enter the game's name:"
       @input = gets.strip.downcase
       game = GameInfo::Game.find_or_create_game(@input)
+      binding.pry
       if game.developers || game.publishers
         print_info(game)
       else

@@ -25,11 +25,15 @@ class GameInfo::Game
     end
 
     def self.create_game(name)
-      @@all << self.new.tap {|game| game.name = name}
+      @@all << self.new({name: name})
+    end
+
+    def self.find_game(name)
+      @@all.find{|game| game.name == name}
     end
     
     def self.find_or_create_game(name)
-      @@all.find{|game| game.name == name} || create_game(name)
+      find_game(name) || create_game(name)
     end
 
 end
