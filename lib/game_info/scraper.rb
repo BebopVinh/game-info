@@ -52,7 +52,7 @@ class GameInfo::Scraper
         end
       end
 
-      game = GameInfo::Game.find_game(chosen_game)
+      game = GameInfo::Game.find_or_create_game(chosen_game)
       game.add_info(hash)
       game
     end

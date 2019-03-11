@@ -15,7 +15,7 @@ class GameInfo::CLI
           show_menu
         elsif (1..GameInfo::Scraper.games.length).include?(@input.to_i)
           @input = @input.to_i - 1
-          game = self.inspect(@input)
+          game = self.choose_game(@input)
           self.print_info(game)
         else
           input_invalid
@@ -30,7 +30,7 @@ class GameInfo::CLI
       end
     end
 
-		def inspect(input)
+		def choose_game(input)
       chosen_game = GameInfo::Scraper.games[input][:name]
       puts "(Loading...) --> || #{chosen_game} ||"
       if GameInfo::Game.void.include?(chosen_game)
@@ -75,6 +75,17 @@ class GameInfo::CLI
         else
           input_invalid    
         end
+      end
+    end
+
+    def search_by_name
+      puts "Please enter the game's name:"
+      @input = gets.strip.downcase
+      game = GameInfo::Game.find_or_create_game(@input)
+      if game.developers || game.publishers
+        print_info(game)
+      else
+        print_info(GameInfo::Scraper.find_info(game))
       end
     end
 
