@@ -52,11 +52,6 @@ class GameInfo::Scraper
         end
       end
 
-      # if x=doc.css('h3.underscratch.underscratch-yellow')
-      #   rating = Nokogiri::HTML(open('https://www.igdb.com/games/' + name + '/age_rating'))
-      #   # rating = rating.css('img.gamepage-rating-image.img-responsive')['title']
-      #   binding.pry
-      # end
       game = GameInfo::Game.find_game(chosen_game)
       game.add_info(hash)
       game
