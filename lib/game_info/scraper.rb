@@ -17,7 +17,7 @@ class GameInfo::Scraper
     end
 
     def self.find_info(chosen_game)
-      name = chosen_game.downcase.delete(?').gsub(' ', '-')
+      name = chosen_game.downcase.delete(?').delete(?:).gsub(' ', '-')
       doc = Nokogiri::HTML(open('https://www.igdb.com/games/' + name)) #old database link
       hash = {}
       y = hash[:platform_release] = [] 
