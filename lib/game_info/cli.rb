@@ -3,18 +3,22 @@ class GameInfo::CLI
     def call
       puts "Top 10 Games streaming on Twitch.tv:\n\n"
       list_games
-      print  "\n\nLast updated: " + GameInfo::Scraper.time
-			print "\n\nPlease select a game by its [number], or input 'exit': "
+      puts  "\nLast updated: " + GameInfo::Scraper.time
+      puts  "\nInput the commands below:
+              \n  Select a game by its [number].
+              \n  Use 'menu' to show more features.
+              \n  Use 'exit' to terminate the program."
+
       @input = gets.strip.downcase
       until @input == 'exit'
-        if (1..GameInfo::Scraper.games.length).include?(@input.to_i)
+        if @input == 'menu'
+          show_menu
+        elsif (1..GameInfo::Scraper.games.length).include?(@input.to_i)
           @input = @input.to_i - 1
           game = self.inspect(@input)
           self.print_info(game)
         else
-          puts "Invalid input, please try again."
-          puts "Please select a game by its [number], or input 'exit': "
-          @input = gets.strip.downcase
+          input_invalid
         end
       end
       quit_it
@@ -50,6 +54,47 @@ class GameInfo::CLI
         game.platform_release.each {|x| puts "            #{x}"}
         puts "\n\n        ------------------------------"
       continue
+    end
+
+    def show_menu
+      puts <<-DOC
+        Select a function by the first letter:
+        [B]ack to welcome screen
+        [R]eload Top 10 list
+        [S]earch game by name
+        [E]xit
+      DOC
+      @input = gets.strip.downcase
+      until @input == ('exit' || 'e')
+        if input == 'b'
+          call
+        elsif input == 's'
+          search_by_name
+        elsif input == 'r'    
+          reload_list
+        else
+          input_invalid    
+        end
+      end
+    end
+
+    def input_invalid
+      puts "Invalid input, please try again."
+      @input = gets.strip.downcase
+    end
+
+    def reload_list
+      puts "Reloading... may freeze momentarily..."
+      GameInfo::Scraper.new
+      puts "Done! Return to welcome screen? [y/n]"
+      @input = gets.strip.downcase
+      if @input == 'y'
+        call
+      elsif @input == 'n'
+        show_menu
+      else
+        input_invalid
+      end
     end
 
     def continue
