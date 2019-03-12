@@ -81,12 +81,12 @@ class GameInfo::CLI
     def search_by_name
       puts "Please enter the game's name:"
       @input = gets.strip.downcase
-      game = GameInfo::Game.find_or_create_game(@input)
-      binding.pry
-      if game.developers || game.publishers
+      if GameInfo::Game.find_game(@input)
+        game = GameInfo::Game.find_game(@input)
         print_info(game)
       else
-        print_info(GameInfo::Scraper.find_info(game))
+        game = GameInfo::Scraper.find_info(@input)
+        print_info(game)
       end
     end
 

@@ -25,7 +25,7 @@ class GameInfo::Game
     end
 
     def self.create_game(name)
-      @@all << self.new({name: name})
+      self.new({name: name})
     end
 
     def self.find_game(name)
