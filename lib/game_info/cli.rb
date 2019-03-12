@@ -85,8 +85,8 @@ class GameInfo::CLI
         game = GameInfo::Game.find_game(@input)
         print_info(game)
       else
-        game = GameInfo::Scraper.find_info(@input)
-        print_info(game)
+        name = @input.gsub(/[^0-9a-z\- ]/, "").gsub(' ', '+')
+        GameInfo::Scraper.search_list(name)
       end
     end
 

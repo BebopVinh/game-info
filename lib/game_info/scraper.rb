@@ -16,9 +16,9 @@ class GameInfo::Scraper
       @@games.each {|hash| GameInfo::Game.new(hash)}
     end
 
-    def self.find_info(chosen_game)
-      name = chosen_game.downcase.delete(?').gsub(' ', '-')
-      doc = Nokogiri::HTML(open('https://www.igdb.com/games/' + name)) #old database link
+    def self.find_info(chosen_game, doc = "")
+      name = chosen_game.downcase.gsub(/[^0-9a-z\- ]/, "").gsub(' ', '-')
+      doc = Nokogiri::HTML(open('https://www.igdb.com/games/' + name)) if doc == ""
       hash = {}
       y = hash[:platform_release] = [] 
       doc.css('div.text-muted.release-date').each do |tag|
@@ -55,6 +55,16 @@ class GameInfo::Scraper
       game = GameInfo::Game.find_or_create_game(chosen_game)
       game.add_info(hash)
       game
+    end
+
+    def self.search_list(name)
+      search_url = URI.escape('https://www.igdb.com/search?utf8=✓&type=1&q=')
+      doc = Nokogiri::HTML(open(search_url + name))
+      node = doc.css('div.main-container.center h4.media-heading')
+      arr = node.map do |x|
+        x.attr('title')
+      end
+      binding.pry
     end
 
     def self.games

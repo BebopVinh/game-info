@@ -1,6 +1,7 @@
 require 'pry'
 require 'nokogiri'
 require 'open-uri'
+require 'uri'
 require 'openssl'
 
 require_relative '../lib/game_info/cli'
