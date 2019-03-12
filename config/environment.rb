@@ -3,6 +3,7 @@ require 'nokogiri'
 require 'open-uri'
 require 'uri'
 require 'openssl'
+require 'json'
 
 require_relative '../lib/game_info/cli'
 require_relative '../lib/game_info/game'

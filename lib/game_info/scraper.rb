@@ -60,11 +60,10 @@ class GameInfo::Scraper
     def self.search_list(name)
       search_url = URI.escape('https://www.igdb.com/search?utf8=✓&type=1&q=')
       doc = Nokogiri::HTML(open(search_url + name))
-      node = doc.css('div.main-container.center h4.media-heading')
-      arr = node.map do |x|
-        x.attr('title')
-      end
+      node = doc.xpath("//div[@class='block']/*").first.to_h["data-json"].split("")
       binding.pry
+      node = JSON.parse(node)
+
     end
 
     def self.games
