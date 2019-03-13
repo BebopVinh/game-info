@@ -3,18 +3,22 @@ class GameInfo::CLI
     def call
       puts "Top 10 Games streaming on Twitch.tv:\n\n"
       list_games
-      print  "\n\nLast updated: " + GameInfo::Scraper.time
-			print "\n\nPlease select a game by its [number], or input 'exit': "
+      puts  "\nLast updated: " + GameInfo::Scraper.time
+      puts  "\nInput the commands below:
+              \n  Select a game by its [number].
+              \n  Use 'menu' to show more features.
+              \n  Use 'exit' to terminate the program."
+
       @input = gets.strip.downcase
       until @input == 'exit'
-        if (1..GameInfo::Scraper.games.length).include?(@input.to_i)
+        if @input == 'menu'
+          show_menu
+        elsif (1..GameInfo::Scraper.games.length).include?(@input.to_i)
           @input = @input.to_i - 1
-          game = self.inspect(@input)
+          game = self.choose_game(@input)
           self.print_info(game)
         else
-          puts "Invalid input, please try again."
-          puts "Please select a game by its [number], or input 'exit': "
-          @input = gets.strip.downcase
+          input_invalid
         end
       end
       quit_it
@@ -26,7 +30,7 @@ class GameInfo::CLI
       end
     end
 
-		def inspect(input)
+		def choose_game(input)
       chosen_game = GameInfo::Scraper.games[input][:name]
       puts "(Loading...) --> || #{chosen_game} ||"
       if GameInfo::Game.void.include?(chosen_game)
@@ -48,8 +52,78 @@ class GameInfo::CLI
         Platforms & Release Dates:
       DOC
         game.platform_release.each {|x| puts "            #{x}"}
-        puts "\n\n        ------------------------------"
+        puts "\n        ------------------------------"
       continue
+    end
+
+    def show_menu
+      puts <<-DOC
+        Select a function by the first letter:
+        [B]ack to welcome screen
+        [R]eload Top 10 list
+        [S]earch game by name
+        [E]xit
+      DOC
+      @input = gets.strip.downcase
+      until @input == ('exit' || 'e')
+        if input == 'b'
+          call
+        elsif input == 's'
+          search_by_name
+        elsif input == 'r'    
+          reload_list
+        else
+          input_invalid    
+        end
+      end
+    end
+
+    def search_by_name
+      puts "Please enter the game's name:"
+      @input = gets.strip.downcase
+      if GameInfo::Game.find_game(@input)
+        game = GameInfo::Game.find_game(@input)
+        print_info(game)
+      else
+        name = @input.gsub(/[^0-9a-z\- ]/, "").gsub(' ', '+')
+        array = GameInfo::Scraper.search_list(name)
+        puts "Here are some results:"
+        array.each_with_index {|hash, i| puts "#{i+1}. #{hash.keys.join}"}
+        puts "Please choose a game by its [number], or 'exit'"
+        @input = gets.strip.downcase!
+        until @input == 'exit'
+          if (1..array.length).include?(@input.to_i)
+            @input = @input.to_i - 1
+            chosen_game = array[@input].keys.join
+            url = 'https://www.igdb.com' + array[@input].values.join
+            puts "(Loading...) --> || #{chosen_game} ||"
+            game = GameInfo::Scraper.find_info(chosen_game, url)
+            print_info(game)
+          else
+            input_invalid
+          end
+        end
+      end
+      show_menu
+    end
+
+    def input_invalid
+      puts "Invalid input, please try again."
+      @input = gets.strip.downcase
+    end
+
+    def reload_list
+      puts "Reloading... may freeze momentarily..."
+      GameInfo::Scraper.new
+      puts "Done! Return to welcome screen? [y/n]"
+      @input = gets.strip.downcase
+      if @input == 'y'
+        call
+      elsif @input == 'n'
+        show_menu
+      else
+        input_invalid
+      end
     end
 
     def continue

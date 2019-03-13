@@ -23,9 +23,17 @@ class GameInfo::Game
     def self.void
       @@void
     end
-    
+
+    def self.create_game(name)
+      self.new({name: name})
+    end
+
     def self.find_game(name)
       @@all.find{|game| game.name == name}
+    end
+    
+    def self.find_or_create_game(name)
+      find_game(name) || create_game(name)
     end
 
 end
