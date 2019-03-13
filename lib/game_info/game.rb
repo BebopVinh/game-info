@@ -32,4 +32,8 @@ class GameInfo::Game
       @@all.find{|game| game.name == name}
     end
     
+    def self.find_or_create_game(name)
+      find_game(name) || create_game(name)
+    end
+
 end
