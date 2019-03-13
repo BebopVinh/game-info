@@ -52,7 +52,7 @@ class GameInfo::CLI
         Platforms & Release Dates:
       DOC
         game.platform_release.each {|x| puts "            #{x}"}
-        puts "\n\n        ------------------------------"
+        puts "\n        ------------------------------"
       continue
     end
 
@@ -86,8 +86,25 @@ class GameInfo::CLI
         print_info(game)
       else
         name = @input.gsub(/[^0-9a-z\- ]/, "").gsub(' ', '+')
-        GameInfo::Scraper.search_list(name)
+        array = GameInfo::Scraper.search_list(name)
+        puts "Here are some results:"
+        array.each_with_index {|hash, i| puts "#{i+1}. #{hash.keys.join}"}
+        puts "Please choose a game by its [number], or 'exit'"
+        @input = gets.strip.downcase!
+        until @input == 'exit'
+          if (1..array.length).include?(@input.to_i)
+            @input = @input.to_i - 1
+            chosen_game = array[@input].keys.join
+            url = 'https://www.igdb.com' + array[@input].values.join
+            puts "(Loading...) --> || #{chosen_game} ||"
+            game = GameInfo::Scraper.find_info(chosen_game, url)
+            print_info(game)
+          else
+            input_invalid
+          end
+        end
       end
+      show_menu
     end
 
     def input_invalid

@@ -16,10 +16,14 @@ class GameInfo::Scraper
       @@games.each {|hash| GameInfo::Game.new(hash)}
     end
 
-    def self.find_info(chosen_game, doc = "")
+    def self.find_info(chosen_game, url = "")
       name = chosen_game.downcase.gsub(/[^0-9a-z\- ]/, "").gsub(' ', '-')
-      doc = Nokogiri::HTML(open('https://www.igdb.com/games/' + name)) if doc == ""
-      hash = {}
+      if url == ""
+        doc = Nokogiri::HTML(open('https://www.igdb.com/games/' + name))
+      else
+        doc = Nokogiri::HTML(open(url))
+      end
+        hash = {}
       y = hash[:platform_release] = [] 
       doc.css('div.text-muted.release-date').each do |tag|
         platform = tag.css('a').text
@@ -39,7 +43,7 @@ class GameInfo::Scraper
         end
       end
 
-      if x=doc.css('div.optimisly-game-extrainfo1')
+      if x = doc.css('div.optimisly-game-extrainfo1')
         node = x.css('label.mar-lg-top')
         y = hash[:modes] = []
         z = hash[:genres] = []
@@ -60,12 +64,16 @@ class GameInfo::Scraper
     def self.search_list(name)
       search_url = URI.escape('https://www.igdb.com/search?utf8=✓&type=1&q=')
       doc = Nokogiri::HTML(open(search_url + name))
-      node = doc.xpath("//div[@class='block']/*").first.to_h["data-json"].split("")
-      binding.pry
+      node = doc.xpath("//div[@class='block']/*").first.to_h["data-json"]
       node = JSON.parse(node)
-
+      array = node.map do |x|
+        name = x["data"]["name"]
+        url = x["data"]["url"]
+        hash = {name => url}
+      end
+      array.slice!(0..9)
     end
-
+    
     def self.games
       @@games
     end
@@ -73,4 +81,5 @@ class GameInfo::Scraper
     def self.time
       @@time
     end
-end
+
+end #END OF SCRAPER CLASS
