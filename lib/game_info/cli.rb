@@ -90,15 +90,16 @@ class GameInfo::CLI
         puts "Here are some results:"
         array.each_with_index {|hash, i| puts "#{i+1}. #{hash.keys.join}"}
         puts "Please choose a game by its [number], or 'exit'"
-        @input = gets.strip.downcase!
         until @input == 'exit'
-          if (1..array.length).include?(@input.to_i)
+          @input = gets.strip.downcase
+          if @input.to_i.between?(1, array.size)
             @input = @input.to_i - 1
             chosen_game = array[@input].keys.join
             url = 'https://www.igdb.com' + array[@input].values.join
             puts "(Loading...) --> || #{chosen_game} ||"
             game = GameInfo::Scraper.find_info(chosen_game, url)
             print_info(game)
+            continuemen
           else
             input_invalid
           end
@@ -127,7 +128,6 @@ class GameInfo::CLI
     end
 
     def continue
-      input = nil
       puts "\nEnter [y] to return to menu, [n] to exit"
       input = gets.strip.downcase
       if input == 'y'

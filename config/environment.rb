@@ -1,7 +1,6 @@
 require 'pry'
 require 'nokogiri'
 require 'open-uri'
-require 'uri'
 require 'openssl'
 require 'json'
 
