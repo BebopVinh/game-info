@@ -1,8 +1,3 @@
-# GameInfo
-
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/game_info`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
 ## Installation
 
 Add this line to your application's Gemfile:
@@ -21,7 +16,9 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+Welcome screen will list Top Ten Games streaming on Twitch.tv updated on a daily basis.
+Selecting a game will pull additional information listed on IGDB.com for the game.
+Use 'menu' to show additional functionality, including a search function.
 
 ## Development
 
