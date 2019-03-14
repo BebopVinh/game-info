@@ -66,14 +66,18 @@ class GameInfo::Scraper
       search_url = 'https://www.igdb.com/search?utf8=%E2%9C%93&type=1&q='
       doc = Nokogiri::HTML(open(search_url + name))
       node = doc.xpath("//div[@class='block']/*").first.to_h["data-json"]
-      node = JSON.parse(node)
-      array = node.map do |x|
-        name = x["data"]["name"]
-        url = x["data"]["url"]
-        hash = {name => url}
+      if node == nil
+        array = []
+      else
+        node = JSON.parse(node)
+        array = node.map do |x|
+          name = x["data"]["name"]
+          url = x["data"]["url"]
+          hash = {name => url}
+        end
+        array.slice!(0..9)
       end
-      array.slice!(0..9)
-    end
+    end #End of self_search method
     
     def self.games
       @@games

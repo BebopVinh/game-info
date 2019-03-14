@@ -30,16 +30,18 @@ class GameInfo::CLI
       end
     end
 
-		def choose_game(input)
-      chosen_game = GameInfo::Scraper.games[input][:name]
-      puts "(Loading...) --> || #{chosen_game} ||"
-      if GameInfo::Game.void.include?(chosen_game)
-        puts "\nThis is a variety category stream on Twitch. It does not pertain to video games."
-        continue
-      else
-        game = GameInfo::Scraper.find_info(chosen_game)
+    def choose_game(input)
+      if input.is_a? FixNum
+        chosen_game = GameInfo::Scraper.games[input][:name]
+        puts "(Loading...) --> || #{chosen_game} ||"
+        if GameInfo::Game.void.include?(chosen_game)
+          puts "\nThis is a variety category stream on Twitch. It does not pertain to video games."
+          continue
+        else
+          game = GameInfo::Scraper.find_info(chosen_game)
+        end
       end
-    end
+    end #End of choose_game method
 
     def print_info(game)
       puts <<-DOC
@@ -86,22 +88,28 @@ class GameInfo::CLI
         print_info(game)
       else
         name = @input.gsub(/[^0-9a-z\- ]/, "").gsub(' ', '+')
-        array = GameInfo::Scraper.search_list(name)
-        puts "Here are some results:"
-        array.each_with_index {|hash, i| puts "#{i+1}. #{hash.keys.join}"}
-        puts "Please choose a game by its [number], or 'exit'"
-        until @input == 'exit'
-          @input = gets.strip.downcase
-          if @input.to_i.between?(1, array.size)
-            @input = @input.to_i - 1
-            chosen_game = array[@input].keys.join
-            url = 'https://www.igdb.com' + array[@input].values.join
-            puts "(Loading...) --> || #{chosen_game} ||"
-            game = GameInfo::Scraper.find_info(chosen_game, url)
-            print_info(game)
-            continuemen
-          else
-            input_invalid
+        results = GameInfo::Scraper.search_list(name)
+        if results.size < 1
+          puts "No results found."
+          search_by_name
+        else
+          puts "Here are some results:"
+          results.each_with_index {|hash, i| puts "#{i+1}. #{hash.keys.join}"}
+          puts "Please choose a game by its [number], or 'exit'"
+          until @input == 'exit'
+            @input = gets.strip.downcase
+            if @input.to_i.between?(1, results.size)
+              @input = @input.to_i - 1
+              chosen_game = results[@input].keys.join
+              url = 'https://www.igdb.com' + results[@input].values.join
+              binding.pry
+              puts "(Loading...) --> || #{chosen_game} ||"
+              game = GameInfo::Scraper.find_info(chosen_game, url)
+              print_info(game)
+              continue
+            else
+              input_invalid
+            end
           end
         end
       end
