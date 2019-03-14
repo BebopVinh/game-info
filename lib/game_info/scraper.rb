@@ -17,13 +17,9 @@ class GameInfo::Scraper
     end
 
 
-    def self.find_info(chosen_game, url = "")
-      name = chosen_game.downcase.gsub(/[^0-9a-z\- ]/, "").gsub(' ', '-')
-      if url == ""
-        doc = Nokogiri::HTML(open('https://www.igdb.com/games/' + name))
-      else
-        doc = Nokogiri::HTML(open(url))
-      end
+    def self.find_info(name)
+      doc = Nokogiri::HTML(open('https://www.igdb.com/games/' + name))
+      
       hash = {}
       y = hash[:platform_release] = [] 
       doc.css('div.text-muted.release-date').each do |tag|

@@ -13,7 +13,7 @@ class GameInfo::CLI
       until @input == 'exit'
         if @input == 'menu'
           show_menu
-        elsif (1..GameInfo::Scraper.games.length).include?(@input.to_i)
+        elsif @input.to_i.between?(1,GameInfo::Scraper.games.size)
           @input = @input.to_i - 1
           game = self.choose_game(@input)
           self.print_info(game)
@@ -31,17 +31,19 @@ class GameInfo::CLI
     end
 
     def choose_game(input)
-      if input.is_a? FixNum
+      if input.is_a? Fixnum
         chosen_game = GameInfo::Scraper.games[input][:name]
         puts "(Loading...) --> || #{chosen_game} ||"
         if GameInfo::Game.void.include?(chosen_game)
           puts "\nThis is a variety category stream on Twitch. It does not pertain to video games."
           continue
         else
+          chosen_game.downcase!.gsub!(/[^0-9a-z\- ]/, "").gsub!(' ', '-')
+          binding.pry
           game = GameInfo::Scraper.find_info(chosen_game)
         end
       end
-    end #End of choose_game method
+    end #End of choosen_game method
 
     def print_info(game)
       puts <<-DOC
@@ -85,6 +87,7 @@ class GameInfo::CLI
       @input = gets.strip.downcase
       if GameInfo::Game.find_game(@input)
         game = GameInfo::Game.find_game(@input)
+        puts "Game is available in library!"
         print_info(game)
       else
         name = @input.gsub(/[^0-9a-z\- ]/, "").gsub(' ', '+')

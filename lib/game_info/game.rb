@@ -7,8 +7,8 @@ class GameInfo::Game
     'Science & Technology', 'Food & Drink', 'Makers & Crafting', 'Travel & Outdoors', 
     'Sports & Fitness', 'Beauty & Body Art', 'Special Events', 'Wrestling', 'Always On']
 
-    def initialize(game_hash)
-      game_hash.each {|key, value| self.send(("#{key}="), value)}
+    def initialize(name)
+      @name = name
       @@all << self
     end
 
@@ -24,16 +24,13 @@ class GameInfo::Game
       @@void
     end
 
-    def self.create_game(name)
-      self.new({name: name})
-    end
 
     def self.find_game(name)
       @@all.find{|game| game.name == name}
     end
     
     def self.find_or_create_game(name)
-      find_game(name) || create_game(name)
+      find_game(name) || new(name)
     end
 
 end
