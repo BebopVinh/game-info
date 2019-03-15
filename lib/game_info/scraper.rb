@@ -19,39 +19,32 @@ class GameInfo::Scraper
 
     def self.find_info(game)
       doc = Nokogiri::HTML(open('https://www.igdb.com' + game.url)) 
-      hash = {}
-      y = hash[:platform_release] = [] 
-      doc.css('div.text-muted.release-date').each do |tag|
+      game.platform_release = doc.css('div.text-muted.release-date').map do |tag|
         platform = tag.css('a').text
         release = tag.css('span time').text
-        y << "#{platform} - #{release}"
+        "#{platform} - #{release}"
       end
 
       if x = doc.css("div.optimisly-game-maininfo")
-        y = hash[:developers] = []
-        x.xpath("//div[@itemprop='author']").each do |tag|
-          y << tag.css('a').text
+        game.developers = x.xpath("//div[@itemprop='author']/span/a").map do |tag|
+          tag.text
         end
 
-        y = hash[:publishers] = []
-        x.xpath("//span[@itemprop='publisher']").each do |tag|
-          y << tag.css('a').text
+        game.publishers = x.xpath("//span[@itemprop='publisher']/span/a").map do |tag|
+          tag.text
         end
       end
 
       if x = doc.css('div.optimisly-game-extrainfo1')
         node = x.css('label.mar-lg-top')
-        y = hash[:modes] = []
-        z = hash[:genres] = []
-        node.xpath("//a[@itemprop='playMode']").each do |tag|
-          y << tag.text
+        game.modes = node.xpath("//a[@itemprop='playMode']").map do |tag|
+          tag.text
         end
 
-        node.xpath("//a[@itemprop='genre']").each do |tag|
-          z << tag.text
+        game.genres = node.xpath("//a[@itemprop='genre']").map do |tag|
+          tag.text
         end
       end
-      game.add_info(hash)
     end
 
     def self.search_list(name)
