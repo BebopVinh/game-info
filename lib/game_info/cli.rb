@@ -24,7 +24,7 @@ class GameInfo::CLI
 
 		def list_scraper_games
       GameInfo::Scraper.games.each_with_index do |game, i|
-				puts "[#{i+1}]  #{game[:name]} || #{game[:viewers]} average viewers"
+				puts "[#{i+1}]   #{game[:name]} || #{game[:viewers]} average viewers"
       end
     end
 
@@ -37,28 +37,37 @@ class GameInfo::CLI
       puts "(Loading...) --> || #{game.name} ||"
         if GameInfo::Game.void.include?(game.name)
           puts "\nThis is a variety category stream on Twitch. It does not pertain to video games."
-          continue
+          continue(call)
         else
-          chosen_game = chosen_game.downcase.gsub(/[^0-9a-z\- ]/, "").gsub(' ', '-')
-          game = GameInfo::Scraper.find_info(chosen_game)
+          game.url = '/games/' + game.name.downcase.gsub(/[^0-9a-z\- ]/, "").gsub(' ', '-')
+          GameInfo::Scraper.find_info(game)
           print_info(game)
+          continue(call)
         end
       end
     end #End of choosen_game method
 
     def search_by_name
       puts "Please enter the game's name:"
-      @input = gets.strip.downcase
+      @input = gets.strip
       if GameInfo::Game.find_game(@input)
         game = GameInfo::Game.find_game(@input)
         puts "Game is available in library!"
         print_info(game)
+        continue(show_menu)
       else
-        name = @input.gsub(/[^0-9a-z\- ]/, "").gsub(' ', '+')
+        name = @input.downcase.gsub(/[^0-9a-z\- ]/, "").gsub(' ', '+')
         results = GameInfo::Scraper.search_list(name)
         if results.size < 1
-          puts "No results found."
-          search_by_name
+          puts "No results found. Retry? [y/n]"
+          choice = gets.strip.downcase
+          if choice == 'y'
+            search_by_name
+          elsif choice == 'n'
+            continue(show_menu)
+          else
+            input_invalid
+          end
         else
           print_results(results)
         end
@@ -68,7 +77,7 @@ class GameInfo::CLI
 
     def print_results(results)
       puts "Here are some results:"
-      results.each_with_index {|hash, i| puts "#{i+1}. #{hash.keys.join}"}
+      results.each_with_index {|hash, i| puts "[#{i+1}]   #{hash.keys.join}"}
       puts "Please choose a game by its [number], or 'exit'"
       until @input == 'exit'
         @input = gets.strip.downcase
@@ -76,11 +85,12 @@ class GameInfo::CLI
           @input = @input.to_i - 1
           chosen_game = results[@input].keys.join
           game = GameInfo::Game.new(chosen_game)
-          game.url = 'https://www.igdb.com' + results[@input].values.join
+          game.url = results[@input].values.join
           puts "(Loading...) --> || #{game.name} ||"
-          game = GameInfo::Scraper.find_info(game)
+          GameInfo::Scraper.find_info(game)
           print_info(game)
-          continue
+          binding.pry
+          continue(show_menu)
         else
           input_invalid
         end
@@ -99,7 +109,6 @@ class GameInfo::CLI
       DOC
         game.platform_release.each {|x| puts "            #{x}"}
         puts "\n        ------------------------------"
-      continue
     end
 
     def show_menu
@@ -126,6 +135,7 @@ class GameInfo::CLI
 
     def reload_list
       puts "Reloading... may freeze momentarily..."
+      GameInfo::Scraper.games.clear
       GameInfo::Scraper.new
       puts "Done! Return to welcome screen? [y/n]"
       @input = gets.strip.downcase
@@ -143,12 +153,12 @@ class GameInfo::CLI
       @input = gets.strip.downcase
     end
     
-    def continue
-      puts "\nEnter [y] to return to menu, [n] to exit"
-      input = gets.strip.downcase
-      if input == 'y'
-        call
-      elsif input == 'n'
+    def continue(method)
+      puts "\nEnter [y] to return to previous, [n] to exit"
+      @input = gets.strip.downcase
+      if @input == 'y'
+        method
+      elsif @input == 'n'
         quit_it
       else
         input_invalid
