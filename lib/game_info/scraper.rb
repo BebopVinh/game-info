@@ -17,9 +17,8 @@ class GameInfo::Scraper
     end
 
 
-    def self.find_info(name)
-      doc = Nokogiri::HTML(open('https://www.igdb.com/games/' + name))
-      
+    def self.find_info(game)
+      doc = Nokogiri::HTML(open('https://www.igdb.com/games/' + game.url)) 
       hash = {}
       y = hash[:platform_release] = [] 
       doc.css('div.text-muted.release-date').each do |tag|
@@ -52,10 +51,7 @@ class GameInfo::Scraper
           z << tag.text
         end
       end
-
-      game = GameInfo::Game.find_or_create_game(chosen_game)
       game.add_info(hash)
-      game
     end
 
     def self.search_list(name)
