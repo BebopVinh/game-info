@@ -37,12 +37,12 @@ class GameInfo::CLI
       puts "(Loading...) --> || #{game.name} ||"
         if GameInfo::Game.void.include?(game.name)
           puts "\nThis is a variety category stream on Twitch. It does not pertain to video games."
-          continue(call)
+          continue('call')
         else
           game.url = '/games/' + game.name.downcase.gsub(/[^0-9a-z\- ]/, "").gsub(' ', '-')
           GameInfo::Scraper.find_info(game)
           print_info(game)
-          continue(call)
+          continue('call')
         end
       end
     end #End of choosen_game method
@@ -54,7 +54,7 @@ class GameInfo::CLI
         game = GameInfo::Game.find_game(@input)
         puts "Game is available in library!"
         print_info(game)
-        continue(show_menu)
+        continue('show_menu')
       else
         name = @input.downcase.gsub(/[^0-9a-z\- ]/, "").gsub(' ', '+')
         results = GameInfo::Scraper.search_list(name)
@@ -64,7 +64,7 @@ class GameInfo::CLI
           if choice == 'y'
             search_by_name
           elsif choice == 'n'
-            continue(show_menu)
+            continue('show_menu')
           else
             input_invalid
           end
@@ -89,8 +89,7 @@ class GameInfo::CLI
           puts "(Loading...) --> || #{game.name} ||"
           GameInfo::Scraper.find_info(game)
           print_info(game)
-          binding.pry
-          continue(show_menu)
+          continue('show_menu')
         else
           input_invalid
         end
@@ -153,12 +152,11 @@ class GameInfo::CLI
       @input = gets.strip.downcase
     end
     
-    def continue(method)
-      @input = nil
+    def continue(chosen_method)
       puts "\nEnter [y] to return to previous, [n] to exit"
       @input = gets.strip.downcase
       if @input == 'y'
-        method
+        (chosen_method == 'call')? call : show_menu
       elsif @input == 'n'
         quit_it
       else
