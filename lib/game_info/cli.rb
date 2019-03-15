@@ -154,6 +154,7 @@ class GameInfo::CLI
     end
     
     def continue(method)
+      @input = nil
       puts "\nEnter [y] to return to previous, [n] to exit"
       @input = gets.strip.downcase
       if @input == 'y'
