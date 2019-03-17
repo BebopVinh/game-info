@@ -5,5 +5,4 @@ require_relative '../config/environment'
 
 
 puts "Loading..."
-GameInfo::Scraper.new
 GameInfo::CLI.new.call

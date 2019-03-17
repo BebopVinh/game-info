@@ -1,19 +1,22 @@
 class GameInfo::Scraper
     attr_reader :time, :game_names, :viewers
     @@doc = Nokogiri::HTML(open('https://www.twitchmetrics.net/games/popularity'))
-    @@games = []
     def initialize
       @game_names = @@doc.css('h5.mr-2.mb-0')
       @viewers = @@doc.css('div.mb-2 div samp')
       i = 0
+      #Times loop to only grab the top 10 games from @@doc's URL
       10.times do 
         name = @game_names[i].text.strip
         viewers = @viewers[i].text.strip
-        @@games << {name: name, viewers: viewers}
+        game = GameInfo::Game.new(name)
+        game.viewers = viewers
+        GameInfo::Game.twitch << game
+        #Storing these games in twitch array since they're the
+        #only ones with `viewers` attribute
         i += 1
       end
       @@time = @@doc.css('time.time_ago').text
-      @@games.each {|hash| GameInfo::Game.new(hash)}
     end
 
 
@@ -64,10 +67,6 @@ class GameInfo::Scraper
       end
     end #End of self_search method
     
-    def self.games
-      @@games
-    end
-
     def self.time
       @@time
     end

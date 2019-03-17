@@ -1,8 +1,9 @@
 class GameInfo::CLI
     attr_reader :input
     def call
+      GameInfo::Scraper.new if GameInfo::Game.twitch.empty?
       puts "Top 10 Games streaming on Twitch.tv:\n\n"
-      list_scraper_games
+        list_twitch_games
       puts  "\nLast updated: " + GameInfo::Scraper.time
       puts  "\nInput the commands below:
               \n  Select a game by its [number].
@@ -12,7 +13,7 @@ class GameInfo::CLI
       until @input == 'exit'
         if @input == 'menu'
           show_menu
-        elsif @input.to_i.between?(1,GameInfo::Scraper.games.size)
+        elsif @input.to_i.between?(1, GameInfo::Game.twitch.size)
           @input = @input.to_i - 1
           choose_game(@input)
         else
@@ -22,18 +23,19 @@ class GameInfo::CLI
       quit_it
     end #end of call
 
-		def list_scraper_games
-      GameInfo::Scraper.games.each_with_index do |game, i|
-				puts "[#{i+1}]   #{game[:name]} || #{game[:viewers]} average viewers"
+		def list_twitch_games
+      GameInfo::Game.twitch.each_with_index do |game, i|
+        puts "[#{i+1}]".ljust(5) + 
+        "#{game.name} || #{game.viewers} average viewers"
       end
     end
 
     def choose_game(input)
-      chosen_game = GameInfo::Scraper.games[input][:name]
-      if GameInfo::Game.find_game(chosen_game)
+      chosen_game = GameInfo::Game.twitch[input].name
+      game = GameInfo::Game.find_game(chosen_game)
+      if game.developers
         print_info(_)
       else
-      game = GameInfo::Game.new(chosen_game)
       puts "(Loading...) --> || #{game.name} ||"
         if GameInfo::Game.void.include?(game.name)
           puts "\nThis is a variety category stream on Twitch. It does not pertain to video games."
@@ -89,6 +91,7 @@ class GameInfo::CLI
           puts "(Loading...) --> || #{game.name} ||"
           GameInfo::Scraper.find_info(game)
           print_info(game)
+          binding.pry
           continue('show_menu')
         else
           input_invalid
@@ -106,7 +109,7 @@ class GameInfo::CLI
         Game Modes: #{game.modes.join(', ')}
         Platforms & Release Dates:
       DOC
-        game.platform_release.each {|x| puts "            #{x}"}
+        game.platform_release.each {|x| puts "          #{x}"}
         puts "\n        ------------------------------"
     end
 
@@ -134,7 +137,7 @@ class GameInfo::CLI
 
     def reload_list
       puts "Reloading... may freeze momentarily..."
-      GameInfo::Scraper.games.clear
+      GameInfo::Game.twitch.clear
       GameInfo::Scraper.new
       puts "Done! Return to welcome screen? [y/n]"
       @input = gets.strip.downcase

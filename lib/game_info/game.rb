@@ -2,6 +2,7 @@ class GameInfo::Game
     attr_accessor :developers, :publishers, :modes, :esrb, :reviews,
                   :name, :viewers, :platform_release, :genres, :url
     @@all = []
+    @@twitch = []
 
     @@void = ['Just Chatting', 'Music & Performing Arts', 'ASMR', 'Talk Shows & Podcasts', 
     'Science & Technology', 'Food & Drink', 'Makers & Crafting', 'Travel & Outdoors', 
@@ -25,6 +26,9 @@ class GameInfo::Game
       @@void
     end
 
+    def self.twitch
+      @@twitch
+    end
 
     def self.find_game(name)
       @@all.find{|game| game.name == name}
