@@ -16,6 +16,8 @@ Or install it yourself as:
 
 ## Usage
 
+To run use `GameInfo::CLI.new.call`
+
 Welcome screen will list Top Ten Games streaming on Twitch.tv updated on a daily basis.
 Selecting a game will pull additional information listed on IGDB.com for the game.
 Use 'menu' to show additional functionality, including a search function.
