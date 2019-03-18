@@ -9,13 +9,14 @@ class GameInfo::CLI
               \n  Select a game by its [number].
               \n  Use 'menu' to show more features.
               \n  Use 'exit' to terminate the program."
-      input = gets.strip.downcase
-      until input == 'exit'
-        if input == 'menu'
+      until @input == 'exit'
+        @input = gets.strip.downcase
+        if @input == 'menu'
           show_menu
-        elsif input.to_i.between?(1, GameInfo::Game.twitch.size)
-          input = input.to_i - 1
-          choose_game(input)
+        elsif @input.to_i.between?(1, GameInfo::Game.twitch.size)
+          @input = @input.to_i - 1
+          choose_game(@input)
+          continue('call')
         else
           input_invalid
         end
@@ -33,19 +34,17 @@ class GameInfo::CLI
     def choose_game(input)
       chosen_game = GameInfo::Game.twitch[input].name
       game = GameInfo::Game.find_game(chosen_game)
-      binding.pry
       if game.developers
+        puts "Game available in library!"
         print_info(game)
       else
       puts "(Loading...) --> || #{game.name} ||"
         if GameInfo::Game.void.include?(game.name)
           puts "\nThis is a variety category stream on Twitch. It does not pertain to video games."
-          continue('call')
         else
           game.url = '/games/' + game.name.downcase.gsub(/[^0-9a-z\- ]/, "").gsub(' ', '-')
           GameInfo::Scraper.find_info(game)
           print_info(game)
-          continue('call')
         end
       end
     end #End of choosen_game method
@@ -151,7 +150,6 @@ class GameInfo::CLI
 
     def input_invalid
       puts "Invalid input, please try again."
-      @input = gets.strip.downcase
     end
 
     def continue(chosen_method)
@@ -163,6 +161,7 @@ class GameInfo::CLI
         quit_it
       else
         input_invalid
+        continue(chosen_method)
       end
     end
 
