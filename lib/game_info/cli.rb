@@ -52,28 +52,21 @@ class GameInfo::CLI
     def search_by_name
       puts "Please enter the game's name:"
       input = gets.strip
-      if game = GameInfo::Game.find_game(input)
-        puts "Game is available in library!"
-        print_info(game)
-        continue('show_menu')
-      else
-        name = input.downcase.gsub(/[^0-9a-z\- ]/, "").gsub(' ', '+')
-        results = GameInfo::Scraper.search_list(name)
-        if results.size < 1
-          puts "No results found. Retry? [y/n]"
-          choice = gets.strip.downcase
-          if choice == 'y'
-            search_by_name
-          elsif choice == 'n'
-            continue('show_menu')
-          else
-            input_invalid
-          end
+      name = input.downcase.gsub(/[^0-9a-z\- ]/, "").gsub(' ', '+')
+      results = GameInfo::Scraper.search_list(name)
+      if results.size < 1
+        puts "No results found. Retry? [y/n]"
+        choice = gets.strip.downcase
+        if choice == 'y'
+          search_by_name
+        elsif choice == 'n'
+          continue('show_menu')
         else
-          print_results(results)
+          input_invalid
         end
+      else
+        print_results(results)
       end
-      show_menu
     end #End of search_by_name
 
     def print_results(results)
@@ -85,12 +78,18 @@ class GameInfo::CLI
         if @input.to_i.between?(1, results.size)
           @input = @input.to_i - 1
           chosen_game = results[@input].keys.join
-          game = GameInfo::Game.new(chosen_game)
-          game.url = results[@input].values.join
-          puts "(Loading...) --> || #{game.name} ||"
-          GameInfo::Scraper.find_info(game)
-          print_info(game)
-          continue('show_menu')
+          if game = GameInfo::Game.find_game(chosen_game)
+            puts "Game is available in library!"
+            print_info(game)
+            continue('show_menu')
+          else
+            game = GameInfo::Game.new(chosen_game)
+            game.url = results[@input].values.join
+            puts "(Loading...) --> || #{game.name} ||"
+            GameInfo::Scraper.find_info(game)
+            print_info(game)
+            continue('show_menu')
+          end
         else
           input_invalid
         end
