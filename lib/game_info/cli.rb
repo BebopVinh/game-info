@@ -9,13 +9,13 @@ class GameInfo::CLI
               \n  Select a game by its [number].
               \n  Use 'menu' to show more features.
               \n  Use 'exit' to terminate the program."
-      @input = gets.strip.downcase
-      until @input == 'exit'
-        if @input == 'menu'
+      input = gets.strip.downcase
+      until input == 'exit'
+        if input == 'menu'
           show_menu
-        elsif @input.to_i.between?(1, GameInfo::Game.twitch.size)
-          @input = @input.to_i - 1
-          choose_game(@input)
+        elsif input.to_i.between?(1, GameInfo::Game.twitch.size)
+          input = input.to_i - 1
+          choose_game(input)
         else
           input_invalid
         end
@@ -25,7 +25,7 @@ class GameInfo::CLI
 
 		def list_twitch_games
       GameInfo::Game.twitch.each_with_index do |game, i|
-        puts "[#{i+1}]".ljust(5) + 
+        puts "[#{i+1}]".ljust(5) +
         "#{game.name} || #{game.viewers} average viewers"
       end
     end
@@ -33,8 +33,9 @@ class GameInfo::CLI
     def choose_game(input)
       chosen_game = GameInfo::Game.twitch[input].name
       game = GameInfo::Game.find_game(chosen_game)
+      binding.pry
       if game.developers
-        print_info(_)
+        print_info(game)
       else
       puts "(Loading...) --> || #{game.name} ||"
         if GameInfo::Game.void.include?(game.name)
@@ -51,14 +52,13 @@ class GameInfo::CLI
 
     def search_by_name
       puts "Please enter the game's name:"
-      @input = gets.strip
-      if GameInfo::Game.find_game(@input)
-        game = GameInfo::Game.find_game(@input)
+      input = gets.strip
+      if game = GameInfo::Game.find_game(input)
         puts "Game is available in library!"
         print_info(game)
         continue('show_menu')
       else
-        name = @input.downcase.gsub(/[^0-9a-z\- ]/, "").gsub(' ', '+')
+        name = input.downcase.gsub(/[^0-9a-z\- ]/, "").gsub(' ', '+')
         results = GameInfo::Scraper.search_list(name)
         if results.size < 1
           puts "No results found. Retry? [y/n]"
@@ -91,7 +91,6 @@ class GameInfo::CLI
           puts "(Loading...) --> || #{game.name} ||"
           GameInfo::Scraper.find_info(game)
           print_info(game)
-          binding.pry
           continue('show_menu')
         else
           input_invalid
@@ -127,10 +126,10 @@ class GameInfo::CLI
           call
         elsif input == 's'
           search_by_name
-        elsif input == 'r'    
+        elsif input == 'r'
           reload_list
         else
-          input_invalid    
+          input_invalid
         end
       end
     end
@@ -154,7 +153,7 @@ class GameInfo::CLI
       puts "Invalid input, please try again."
       @input = gets.strip.downcase
     end
-    
+
     def continue(chosen_method)
       puts "\nEnter [y] to return to previous, [n] to exit"
       @input = gets.strip.downcase
