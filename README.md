@@ -1,19 +1,3 @@
-## Installation
-
-Add this line to your application's Gemfile:
-
-```ruby
-gem 'game_info'
-```
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
-
-    $ gem install game_info
-
 ## Usage
 
 To run use `GameInfo::CLI.new.call`
